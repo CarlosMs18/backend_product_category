@@ -1,20 +1,21 @@
 package com.melgarejo.backend.response;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ResponseRest {
 
-    private HashMap<String, String> metada = new HashMap<>();
+    private ArrayList<HashMap<String, String>> metadata= new ArrayList<>();
 
-    public HashMap<String, String> getMetada() {
-        return metada;
+    public ArrayList<HashMap<String, String>> getMetadata() {
+        return metadata;
     }
-
-    public void setMetada(String type, String code, String date) {
+    public void setMetadata(String type, String code, String date) {
             HashMap<String, String> response = new HashMap<String,String>();
             response.put("type", type);
             response.put("code",code);
             response.put("date",date);
 
+            metadata.add(response);
     }
 }
