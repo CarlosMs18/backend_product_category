@@ -91,15 +91,47 @@ public class ICategoryServiceImpl implements  ICategoryService{
     }
 
     @Override
+    @Transactional
     public ResponseEntity<CategoryResponseRest> update(Category category, Long id) {
-        return null;
+        CategoryResponseRest response = new CategoryResponseRest();
+        List<Category> list = new ArrayList<>();
+        try{
+            Optional<Category> categoryDB =  categoryDao.findById(id);
+            if(categoryDB.isPresent()){
+
+                categoryDB.get().setNombre(category.getNombre());
+                categoryDB.get().setDescripcion(category.getDescripcion());
+
+                Category categoryUpdated = categoryDao.save(categoryDB.get());
+
+                if(categoryUpdated != null){
+                    list.add(categoryDB.get());
+                    response.getCategoryResponse().setCategory(list);
+                    response.setMetadata("Respuesta Ok","00","Categoria actualizada");
+                }else{
+                    response.setMetadata("Respuesta nok","-1","Categoria no actualizada");
+                    return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.BAD_REQUEST);
+                }
+
+
+            }else{
+                response.setMetadata("Respuesta nok","-1","Categoria no encontrada");
+                return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+        }catch (DataAccessException e){
+            response.setMetadata("Respuesta nok","-1","Error al actualizar la categoria");
+            e.getStackTrace();
+            return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
     }
 
     @Override
     @Transactional
     public ResponseEntity<CategoryResponseRest> deleteById(Long id) {
         CategoryResponseRest response = new CategoryResponseRest();
-        List<Category> list =new ArrayList<>();
+        List<Category> list = new ArrayList<>();
         try{
             Optional<Category> category =  categoryDao.findById(id);
             if(category.isPresent()){

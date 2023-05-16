@@ -53,6 +53,25 @@ public class CategoryRestController {
         return response;
     }
 
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<?> updatedCategory(@Valid @RequestBody Category category , BindingResult result , @PathVariable Long id){
+        Map<String, Object> errors = new HashMap<>();
+        if(result.hasErrors()) {
+
+            List<String> errores = result.getFieldErrors()
+                    .stream()
+                    .map(err -> "El campo '" + err.getField() +"' "+ err.getDefaultMessage())
+                    .collect(Collectors.toList());
+
+            errors.put("errors", errores);
+            return new ResponseEntity<Map<String, Object>>(errors, HttpStatus.BAD_REQUEST);
+        }
+        ResponseEntity<CategoryResponseRest> response =categoryService.update(category , id);
+        return response;
+    }
+
+
+
 
     @DeleteMapping("/categories/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id){
