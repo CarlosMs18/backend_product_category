@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ICategoryServiceImpl implements  ICategoryService{
@@ -41,8 +42,26 @@ public class ICategoryServiceImpl implements  ICategoryService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseEntity<CategoryResponseRest> searchById(Long id) {
-        return null;
+        CategoryResponseRest response = new CategoryResponseRest();
+        List<Category> list =new ArrayList<>();
+        try {
+            Optional<Category> category =  categoryDao.findById(id);
+            if(category.isPresent()){
+                list.add(category.get());
+                response.getCategoryResponse().setCategory(list);
+                response.setMetadata("Respuesta Ok","00","Categoria Encontrada");
+            }else{
+                response.setMetadata("Respuesta nok","-1","Categoria no encontrada");
+                return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+        }catch (DataAccessException e ){
+            response.setMetadata("Respuesta nok","-1","Error al buscar la categoria");
+            e.getStackTrace();
+            return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
     }
 
     @Override
@@ -77,7 +96,28 @@ public class ICategoryServiceImpl implements  ICategoryService{
     }
 
     @Override
+    @Transactional
     public ResponseEntity<CategoryResponseRest> deleteById(Long id) {
-        return null;
+        CategoryResponseRest response = new CategoryResponseRest();
+        List<Category> list =new ArrayList<>();
+        try{
+            Optional<Category> category =  categoryDao.findById(id);
+            if(category.isPresent()){
+                list.add(category.get());
+                categoryDao.deleteById(id);
+                response.getCategoryResponse().setCategory(list);
+                response.setMetadata("Respuesta Ok","00","Categoria Eliminada");
+            }else{
+                response.setMetadata("Respuesta nok","-1","Categoria no encontrada");
+                return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+        }catch (DataAccessException e){
+            response.setMetadata("Respuesta nok","-1","Error al eliminar la categoria");
+            e.getStackTrace();
+            return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+        return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
     }
 }
