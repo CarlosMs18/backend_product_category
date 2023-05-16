@@ -103,7 +103,7 @@ public class IProductServiceImpl implements  IProductService {
             return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return new ResponseEntity<ProductResponseRest>(response, HttpStatus.CREATED);
     }
 
     @Override
@@ -113,6 +113,26 @@ public class IProductServiceImpl implements  IProductService {
 
     @Override
     public ResponseEntity<ProductResponseRest> delete(Long id) {
-        return null;
+         ProductResponseRest response = new ProductResponseRest();
+         List<Product> list = new ArrayList<>();
+
+         try{
+             Optional<Product> productDb = productDao.findById(id);
+             if(productDb.isPresent()){
+                 list.add(productDb.get());
+                 productDao.deleteById(id);
+                 response.getProductResponse().setProduct(list);
+                 response.setMetadata("Respuesta Ok","00","Producto Eliminado con exito!");
+             }else{
+                 response.setMetadata("Respuesta nok","1", "Producto no encontrado!");
+                 return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+             }
+         }catch (DataAccessException e) {
+            response.setMetadata("Respuesta nok", "-1", "Error al eliminar producto");
+            e.getStackTrace();
+            return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+         return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
     }
 }

@@ -55,4 +55,10 @@ public class ProductRestController {
         return response;
     }
 
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<?> eliminarProducto(@PathVariable Long id){
+       ResponseEntity<ProductResponseRest> response = service.delete(id);
+       return response;
+    }
+
 }
