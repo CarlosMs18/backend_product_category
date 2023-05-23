@@ -37,5 +37,17 @@ public class Product implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Category category;
+
+
+    @Lob
+
+    @Basic(fetch = FetchType.LAZY)
+
+    @Column(name="picture",columnDefinition="longblob")
+
+    private byte[] picture;
+
+
+
     private static final long serialVersionUID= 1L;
 }

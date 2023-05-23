@@ -73,10 +73,52 @@ public class IProductServiceImpl implements  IProductService {
     }
 
     @Override
+    public ResponseEntity<ProductResponseRest> save(Product product, Long categoryId) {
+        ProductResponseRest response = new ProductResponseRest();
+        List<Product> list = new ArrayList<>();
+
+        System.out.println("aca!");
+        System.out.println(product.getPrice());
+        try{
+            Optional<Category> categoryDb = categoryDao.findById(categoryId);
+            if(categoryDb.isPresent()){
+                product.setCategory(categoryDb.get());
+            }else{
+                response.setMetadata("Respuesta nok","-1","Categoria no encontrada asociada");
+                return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+
+            Product productSaved = productDao.save(product);
+
+            if(productSaved != null){
+                list.add(productSaved);
+                response.getProductResponse().setProduct(list);
+                response.setMetadata("Respuesta Ok", "00","Producto guardado con exito!");
+            }else{
+                response.setMetadata("Respuesta nok", "-1","Producto no guardado");
+                return new ResponseEntity<ProductResponseRest>(response, HttpStatus.BAD_REQUEST);
+            }
+
+        }catch (DataAccessException e) {
+            response.setMetadata("Respuesta nok", "-1", "Error al guardar producto");
+            e.getStackTrace();
+            return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<ProductResponseRest>(response, HttpStatus.CREATED);
+    }
+
+
+    /*
+
+
+    @Override
     public ResponseEntity<ProductResponseRest> save(Product product) {
         ProductResponseRest response = new ProductResponseRest();
         List<Product> list = new ArrayList<>();
 
+        System.out.println("aca!");
+        System.out.println(product.getPrice());
         try{
             Optional<Category> categoryDb = categoryDao.findById(product.getCategory().getId());
             if(categoryDb.isPresent()){
@@ -105,10 +147,41 @@ public class IProductServiceImpl implements  IProductService {
 
         return new ResponseEntity<ProductResponseRest>(response, HttpStatus.CREATED);
     }
-
+ */
     @Override
     public ResponseEntity<ProductResponseRest> update(Product product, Long id) {
-        return null;
+        ProductResponseRest response = new ProductResponseRest();
+        List<Product> list = new ArrayList<>();
+
+        System.out.println("aca!");
+        System.out.println(product.getPrice());
+        try{
+            Optional<Category> categoryDb = categoryDao.findById(product.getCategory().getId());
+            if(categoryDb.isPresent()){
+                product.setCategory(categoryDb.get());
+            }else{
+                response.setMetadata("Respuesta nok","-1","Categoria no encontrada asociada");
+                return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+
+            Product productSaved = productDao.save(product);
+
+            if(productSaved != null){
+                list.add(productSaved);
+                response.getProductResponse().setProduct(list);
+                response.setMetadata("Respuesta Ok", "00","Producto guardado con exito!");
+            }else{
+                response.setMetadata("Respuesta nok", "-1","Producto no guardado");
+                return new ResponseEntity<ProductResponseRest>(response, HttpStatus.BAD_REQUEST);
+            }
+
+        }catch (DataAccessException e) {
+            response.setMetadata("Respuesta nok", "-1", "Error al guardar producto");
+            e.getStackTrace();
+            return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<ProductResponseRest>(response, HttpStatus.CREATED);
     }
 
     @Override
