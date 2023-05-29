@@ -37,6 +37,12 @@ public class ProductRestController {
     }
 
 
+    @GetMapping("/products/filter/{name}")
+    public ResponseEntity<ProductResponseRest> searchProductName(@PathVariable String name){
+        ResponseEntity<ProductResponseRest> response = service.searchProductByName(name);
+        return response;
+    }
+
     @GetMapping("/products/{id}")
     public ResponseEntity<?> searchById(@PathVariable  Long id){
         ResponseEntity<ProductResponseRest> response = service.searchById(id);
@@ -63,6 +69,28 @@ public class ProductRestController {
 
         return response;
     }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<ProductResponseRest> update(
+            @RequestParam("picture") MultipartFile picture,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("price") int price,
+            @RequestParam("account") int account,
+            @RequestParam("categoryId") Long categoryID,
+            @PathVariable Long id
+
+    ) throws IOException {
+        Product product = new Product();
+        product.setNombre(nombre);
+        product.setAccount(account);
+        product.setPrice(price);
+        product.setPicture(Util.compressZLib(picture.getBytes()));
+
+        ResponseEntity<ProductResponseRest> response = service.update(product, categoryID, id);
+
+        return response;
+    }
+
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<?> eliminarProducto(@PathVariable Long id){

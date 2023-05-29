@@ -2,8 +2,10 @@ package com.melgarejo.backend.services;
 
 import com.melgarejo.backend.dao.ICategoryDao;
 import com.melgarejo.backend.models.Category;
+import com.melgarejo.backend.models.Product;
 import com.melgarejo.backend.response.CategoryResponse;
 import com.melgarejo.backend.response.CategoryResponseRest;
+import com.melgarejo.backend.response.ProductResponseRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -40,6 +42,23 @@ public class ICategoryServiceImpl implements  ICategoryService{
         System.out.println("ok2");
         return new ResponseEntity<CategoryResponseRest>(response,HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<CategoryResponseRest> searchProductByName(String name) {
+        CategoryResponseRest response = new CategoryResponseRest();
+        try{
+            List<Category> category = (List<Category>) categoryDao.findByNombreContainingIgnoreCase(name);
+            response.getCategoryResponse().setCategory(category);
+            response.setMetadata("Respuesta Ok","00","Respuesta exitoso");
+        }catch (DataAccessException e){
+            response.setMetadata("Respuesta nok","-1","Error al consultar");
+            e.getStackTrace();
+            return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
+    }
+
+
 
     @Override
     @Transactional(readOnly = true)

@@ -3,6 +3,7 @@ package com.melgarejo.backend.controllers;
 
 import com.melgarejo.backend.models.Category;
 import com.melgarejo.backend.response.CategoryResponseRest;
+import com.melgarejo.backend.response.ProductResponseRest;
 import com.melgarejo.backend.services.ICategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,12 @@ public class CategoryRestController {
     public ResponseEntity<CategoryResponseRest> searchCategories(){
             ResponseEntity<CategoryResponseRest> response = categoryService.search();
             return response;
+    }
+
+    @GetMapping("/categories/filter/{name}")
+    public ResponseEntity<CategoryResponseRest> searchProductName(@PathVariable String name){
+        ResponseEntity<CategoryResponseRest> response = categoryService.searchProductByName(name);
+        return response;
     }
 
 
